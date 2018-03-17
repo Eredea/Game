@@ -1,5 +1,15 @@
 import math
 import itertools
+import Tiles
+import random
+
+white = (255,255,255)
+black = (0,0,0)
+red = (255,0,0)
+green = (0,255,0)
+blue = (0,0,255)
+
+colors = [white, black, red, green, blue]
 
 def pixel_to_offset(pixelTuple):
 
@@ -53,7 +63,6 @@ def axial_to_cube(axialCoords):
     x = q
     z = r
     y = -x -z
-    print(x,y,z)
     return x,y,z
 
 def offset_to_axial(offsetCoords):
@@ -81,6 +90,10 @@ class Hexagon():
 
         self.vertices = [(self.xPixel + Hexagon.size * math.cos(angle), self.yPixel + Hexagon.size * math.sin(angle)) for angle in self.verticesAngles]
         self.color = color
+        self.inhabited = False
+        self.tilePic = Tiles.tiles[random.randrange(4)]
+        self.color = colors[random.randrange(5)]
+
 
     def get_center(self):
         """Returns the pixel values of the center of the hexagon, dependent on the hexagons offset coordinates."""
@@ -107,12 +120,30 @@ class Hexagon():
         """Returns the distance between this hexagon and another hexagon given a hexagon object or (x,y) tuple."""
         return Hexagon.distance(self, other)
 
+
+
 class map():
 
     fullMapCoords = list(itertools.product(range(15), range(16)))
 
     def __init__(self):
         self.tiles = [Hexagon(coord) for coord in map.fullMapCoords]
+        self.hasChanged = False
+
+    def place_char(self, character, hex):
+        hex.inhabited = True
+        hex.character = character
+        self.hasChanged = True
+
+    def move_char(self, fromHex, toHex):
+        if not toHex.inhabited:
+            if fromHex.character.movementSpeed >= abs(toHex - fromHex):
+                toHex.character = fromHex.character
+                toHex.inhabited = True
+
+                fromHex.character = None
+                fromHex.inhabited = False
+                self.hasChanged = True
 
 
 something = map()

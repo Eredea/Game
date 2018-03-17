@@ -1,0 +1,5 @@
+something = ([1,2,3,4,5], [6,7,8,9,10])
+print(*something)
+print(something)
+print(list(zip(*something)))
+print(list(zip(something)))
